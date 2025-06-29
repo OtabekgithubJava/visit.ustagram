@@ -1,0 +1,156 @@
+<div class="visit-page-container">
+  <div class="preloader" *ngIf="showPreloader">
+    <div id="particles-js" class="particles"></div>
+    <div class="preloader-content">
+      <img src="assets/images/suzani-logo.png" alt="Ustagram Logo" class="preloader-logo">
+      <h1 class="preloader-title">Ustagram</h1>
+      <p class="preloader-subtitle">Xush kelibsiz! Join the Uzbek social revolution</p>
+      <button class="start-button" (click)="startExperience()">START</button>
+    </div>
+  </div>
+
+  <div class="chat-section" *ngIf="showChat">
+    <div class="phone-mockup">
+      <div class="phone-screen">
+        <div class="chat-message" *ngFor="let message of chatMessages; let i = index" [ngClass]="message.sender">
+          <img *ngIf="message.avatar" [src]="message.avatar" class="chat-avatar">
+          <p>{{ message.text }}</p>
+        </div>
+      </div>
+    </div>
+    <button class="explore-button" *ngIf="showExploreButton" (click)="showMainPage()">EXPLORE</button>
+  </div>
+
+  <div class="main-page" *ngIf="showMain">
+    <section class="hero-section">
+      <video autoplay muted loop class="background-video">
+        <source src="assets/videos/ustagram-promo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div class="video-overlay">
+        <div class="video-icons">
+          <fa-icon [icon]="faHeart" class="video-icon" title="Like & Engage"></fa-icon>
+          <fa-icon [icon]="faCamera" class="video-icon" title="Share Photos"></fa-icon>
+          <fa-icon [icon]="faUsers" class="video-icon" title="Join Community"></fa-icon>
+          <fa-icon [icon]="faStar" class="video-icon" title="Rate Content"></fa-icon>
+          <fa-icon [icon]="faSearch" class="video-icon" title="Explore Trends"></fa-icon>
+          <fa-icon [icon]="faComment" class="video-icon" title="Comment & Connect"></fa-icon>
+        </div>
+        <h1 class="hero-title">O'zbek ruhida ulashing</h1>
+        <p class="hero-subtitle">Discover a vibrant social platform with Uzbek soul</p>
+        <a href="https://ustagram.uz" class="hero-cta">Join Ustagram Now</a>
+      </div>
+    </section>
+
+    <section class="carousel-section">
+      <h2 class="section-title">Explore Ustagram’s Features</h2>
+      <div class="carousel" #carousel>
+        <div class="carousel-item" *ngFor="let slide of carouselSlides; let i = index" [ngClass]="{ active: i === currentSlide }">
+          <img [src]="slide.image" [alt]="slide.alt" class="carousel-image">
+          <p class="carousel-caption">{{ slide.caption }}</p>
+        </div>
+      </div>
+      <button class="carousel-nav prev" (click)="prevSlide()">❮</button>
+      <button class="carousel-nav next" (click)="nextSlide()">❯</button>
+    </section>
+
+    <section class="features-section">
+      <h2 class="section-title">Why Choose Ustagram?</h2>
+      <div class="features-grid">
+        <div class="feature-card" *ngFor="let feature of features">
+          <img [src]="feature.image" [alt]="feature.title" class="feature-image">
+          <fa-icon [icon]="feature.icon" class="feature-icon"></fa-icon>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <h2 class="section-title">Ustagram by the Numbers</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <fa-icon [icon]="faUsers" class="stat-icon"></fa-icon>
+          <h3 class="stat-number" data-target="100000">{{ stats.users | number }}</h3>
+          <p>Active Users</p>
+        </div>
+        <div class="stat-card">
+          <fa-icon [icon]="faCamera" class="stat-icon"></fa-icon>
+          <h3 class="stat-number" data-target="500000">{{ stats.posts | number }}</h3>
+          <p>Posts Shared</p>
+        </div>
+        <div class="stat-card">
+          <fa-icon [icon]="faComment" class="stat-icon"></fa-icon>
+          <h3 class="stat-number" data-target="1000000">{{ stats.comments | number }}</h3>
+          <p>Comments Made</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-item" *ngFor="let faq of faqs">
+          <div class="faq-question" (click)="toggleFaq(faq)">
+            <h3>{{ faq.question }}</h3>
+            <fa-icon [icon]="faq.expanded ? faChevronUp : faChevronDown" class="faq-icon"></fa-icon>
+          </div>
+          <div class="faq-answer" *ngIf="faq.expanded">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter-section">
+      <div class="newsletter-content">
+        <h2 class="section-title">Stay Updated with Ustagram</h2>
+        <p>Join our newsletter to get the latest updates and exclusive offers.</p>
+        <div class="newsletter-form">
+          <input type="email" [(ngModel)]="newsletterEmail" (input)="validateEmail()" placeholder="Enter your email" class="newsletter-input">
+          <button (click)="subscribeNewsletter()" [disabled]="!isEmailValid" class="newsletter-button">Subscribe</button>
+          <p class="newsletter-error" *ngIf="emailError">{{ emailError }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="team-section">
+      <h2 class="section-title">Meet Our Team</h2>
+      <div class="team-grid">
+        <div class="team-card" *ngFor="let member of team">
+          <img [src]="member.image" [alt]="member.name" class="team-image">
+          <h3>{{ member.name }}</h3>
+          <p class="team-role">{{ member.role }}</p>
+          <p>{{ member.bio }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials-section">
+      <h2 class="section-title">What Our Users Say</h2>
+      <div class="testimonials-grid">
+        <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+          <p class="testimonial-text">“{{ testimonial.text }}”</p>
+          <p class="testimonial-author">{{ testimonial.author }}</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-section">
+      <div class="footer-content">
+        <img src="assets/images/suzani-logo.png" alt="Ustagram Logo" class="footer-logo">
+        <h3>Ustagram</h3>
+        <p>Connect with the world through Uzbek culture and creativity</p>
+        <div class="social-icons">
+          <a href="https://instagram.com/ustagram" target="_blank"><fa-icon [icon]="faInstagram"></fa-icon></a>
+          <a href="https://twitter.com/ustagram" target="_blank"><fa-icon [icon]="faTwitter"></fa-icon></a>
+          <a href="https://facebook.com/ustagram" target="_blank"><fa-icon [icon]="faFacebook"></fa-icon></a>
+          <a href="https://t.me/ustagram" target="_blank"><fa-icon [icon]="faTelegram"></fa-icon></a>
+        </div>
+        <a href="https://ustagram.uz" class="footer-cta">Join the Community</a>
+      </div>
+    </footer>
+
+    <a href="https://ustagram.uz" class="floating-button">Visit Ustagram Platform</a>
+  </div>
+</div>
