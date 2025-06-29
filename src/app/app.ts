@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faHeart, faCamera, faUsers, faStar, faSearch, faComment, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram, faTwitter, faFacebook, faTelegram } from '@fortawesome/free-brands-svg-icons';
@@ -7,17 +7,22 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
-
-declare module 'gsap';
-declare module 'gsap/ScrollTrigger';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 declare var particlesJS: any;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
-  styleUrl: './app.scss',
-  standalone: false
+  styleUrls: ['./app.scss'],
+  standalone: false,
+  animations: [
+    trigger('messageAnimation', [
+      state('hidden', style({ opacity: 0, transform: 'translateY(30px)' })),
+      state('visible', style({ opacity: 1, transform: 'translateY(0)' })),
+      transition('hidden => visible', animate('0.7s ease-in'))
+    ])
+  ]
 })
 export class App implements OnInit {
   protected title = 'Usta_Visit';
@@ -26,6 +31,7 @@ export class App implements OnInit {
   protected showChat = false;
   protected showExploreButton = false;
   protected showMain = false;
+  protected showTyping = false;
 
   protected currentSlide = 0;
   private carouselInterval: any;
@@ -38,6 +44,7 @@ export class App implements OnInit {
 
   private touchStartX = 0;
   private touchEndX = 0;
+  private currentMessageIndex = 0;
 
   @ViewChild('carousel') carousel!: ElementRef;
 
@@ -55,60 +62,60 @@ export class App implements OnInit {
   protected faChevronDown = faChevronDown;
 
   protected chatMessages = [
-    { sender: 'user1', text: 'Yo, have you checked out Ustagram yet?', avatar: 'assets/images/avatar1.png' },
-    { sender: 'user2', text: 'Totally! Posting photos with Uzbek vibes is amazing.', avatar: 'assets/images/avatar2.png' },
-    { sender: 'user1', text: 'The explore page is fire! So many cool posts from Tashkent.', avatar: 'assets/images/avatar1.png' },
-    { sender: 'user2', text: 'Rating posts makes it so interactive!', avatar: 'assets/images/avatar2.png' },
-    { sender: 'user1', text: 'Commenting and connecting is super smooth.', avatar: 'assets/images/avatar1.png' },
-    { sender: 'user2', text: 'The profile customization is next-level!', avatar: 'assets/images/avatar2.png' },
-    { sender: 'user1', text: 'Let’s share some posts and connect there!', avatar: 'assets/images/avatar1.png' },
-    { sender: 'user2', text: 'Count me in! Ustagram’s the future!', avatar: 'assets/images/avatar2.png' }
+    { sender: 'user1', text: 'Hey, Ustagramni ko‘rdingmi?', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Ha, zo‘r! O‘zbekcha vibe bilan post qilish ajoyib.', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
+    { sender: 'user1', text: 'Kashf qilish sahifasi olov! Toshkentdan buncha qiziq postlar.', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Postlarni baholash juda qiziqarli qiladi!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
+    { sender: 'user1', text: 'Fikr yozish va ulanish juda oson.', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Profilni sozlash keyingi daraja!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
+    { sender: 'user1', text: 'Keling, postlarni ulashamiz va u yerda bog‘lanamiz!', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Men ham bor! Ustagram kelajak!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' }
   ];
 
   protected carouselSlides = [
-    { image: 'assets/images/ustagram-post.png', alt: 'Ustagram Post', caption: 'Share your moments with style' },
-    { image: 'assets/images/ustagram-profile.png', alt: 'Ustagram Profile', caption: 'Craft your unique identity' },
-    { image: 'assets/images/ustagram-explore.png', alt: 'Ustagram Explore', caption: 'Discover trending Uzbek content' },
-    { image: 'assets/images/ustagram-comment.png', alt: 'Ustagram Comment', caption: 'Engage with the community' },
-    { image: 'assets/images/ustagram-rating.png', alt: 'Ustagram Rating', caption: 'Rate and highlight top posts' },
-    { image: 'assets/images/ustagram-share.png', alt: 'Ustagram Share', caption: 'Spread your creativity' }
+    { image: 'https://images.unsplash.com/photo-1516321310768-79db8ce2d971', alt: 'Ustagram Post', caption: 'O‘z lahzalaringizni uslub bilan ulashing' },
+    { image: 'https://images.unsplash.com/photo-1522202176988-66273c2b6e3c', alt: 'Ustagram Profil', caption: 'O‘zingizning noyob shaxsingizni yarating' },
+    { image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', alt: 'Ustagram Kashf', caption: 'O‘zbekning trend kontentini kashf qiling' },
+    { image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f', alt: 'Ustagram Fikr', caption: 'Jamoa bilan muloqot qiling' },
+    { image: 'https://images.unsplash.com/photo-1516321310768-79db8ce2d971', alt: 'Ustagram Baholash', caption: 'Eng yaxshi postlarni baholang' },
+    { image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', alt: 'Ustagram Ulashish', caption: 'Ijodingizni tarqating' }
   ];
 
   protected features = [
-    { title: 'Rating', description: 'Rate posts to highlight the best content in the community.', image: 'assets/images/rating.png', icon: faStar },
-    { title: 'Exploring', description: 'Discover trending posts from Uzbekistan’s vibrant culture.', image: 'assets/images/exploring.png', icon: faSearch },
-    { title: 'Posting', description: 'Share your story with stunning photos and videos.', image: 'assets/images/posting.png', icon: faCamera },
-    { title: 'Commenting', description: 'Connect through meaningful comments and discussions.', image: 'assets/images/commenting.png', icon: faComment },
-    { title: 'Profiling', description: 'Create a personalized Ustagram profile that shines.', image: 'assets/images/profiling.png', icon: faUsers },
-    { title: 'Sharing', description: 'Share your posts across platforms with ease.', image: 'assets/images/sharing.png', icon: faHeart }
+    { title: 'Baholash', description: 'Jamoada eng yaxshi kontentni ajratib ko‘rsatish uchun postlarni baholang.', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', icon: faStar },
+    { title: 'Kashf qilish', description: 'O‘zbekistonning jonli madaniyatidan trend postlarni kashf qiling.', image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', icon: faSearch },
+    { title: 'Post qilish', description: 'Ajoyib fotosuratlar va videolar bilan o‘z hikoyangizni ulashing.', image: 'https://images.unsplash.com/photo-1516321310768-79db8ce2d971', icon: faCamera },
+    { title: 'Fikr yozish', description: 'Fikrlar va muhokamalar orqali bog‘laning.', image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f', icon: faComment },
+    { title: 'Profil yaratish', description: 'Yorqin Ustagram profilini yarating.', image: 'https://images.unsplash.com/photo-1522202176988-66273c2b6e3c', icon: faUsers },
+    { title: 'Ulashish', description: 'Postlaringizni boshqa platformalarda oson ulashing.', image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', icon: faHeart }
   ];
 
   protected faqs = [
-    { question: 'What is Ustagram?', answer: 'Ustagram is a social media platform celebrating Uzbek culture, allowing users to post, rate, and comment on photos.', expanded: false },
-    { question: 'How do I sign up?', answer: 'Visit ustagram.uz/signup, enter your details, and create your account in minutes.', expanded: false },
-    { question: 'Is Ustagram free?', answer: 'Yes, Ustagram is free to use, with optional premium features for enhanced functionality.', expanded: false },
-    { question: 'Can I use Ustagram on mobile?', answer: 'Absolutely! Download our app from ustagram.uz/app for iOS and Android.', expanded: false },
-    { question: 'How do I post content?', answer: 'After signing up, click the camera icon in the app to upload photos or videos.', expanded: false },
-    { question: 'Is my data safe?', answer: 'We prioritize your privacy with robust security measures to protect your data.', expanded: false },
-    { question: 'How can I contact support?', answer: 'Reach out via support@ustagram.uz or through our in-app help center.', expanded: false }
+    { question: 'Ustagram nima?', answer: 'Ustagram - O‘zbek madaniyatini nishonlaydigan ijtimoiy media platformasi, fotosuratlarni joylash, baholash va fikr bildirish imkonini beradi.', expanded: false },
+    { question: 'Qanday ro‘yxatdan o‘tsam bo‘ladi?', answer: 'ustagram.uz/signup ga kiring, ma’lumotlaringizni kiriting va bir necha daqiqada hisob yarating.', expanded: false },
+    { question: 'Ustagram bepulmi?', answer: 'Ha, Ustagram bepul, qo‘shimcha funksiyalar uchun ixtiyoriy premium imkoniyatlar bor.', expanded: false },
+    { question: 'Ustagramni telefonda ishlatsam bo‘ladimi?', answer: 'Albatta! iOS va Android uchun ustagram.uz/app dan ilovamizni yuklab oling.', expanded: false },
+    { question: 'Kontentni qanday joylasam bo‘ladi?', answer: 'Ro‘yxatdan o‘tgach, ilovada kamera belgisini bosing va fotosurat yoki video yuklang.', expanded: false },
+    { question: 'Ma’lumotlarim xavfsizmi?', answer: 'Ma’lumotlaringizni himoya qilish uchun kuchli xavfsizlik choralarini qo‘llaymiz.', expanded: false },
+    { question: 'Qo‘llab-quvvatlash bilan qanday bog‘lansam bo‘ladi?', answer: 'support@ustagram.uz orqali yoki ilovadagi yordam markazi orqali bog‘laning.', expanded: false }
   ];
 
   protected team = [
-    { name: 'Azizbek Yuldashev', role: 'Founder & CEO', bio: 'Passionate about showcasing Uzbek culture through technology.', image: 'assets/images/team1.png' },
-    { name: 'Dilshod Mirzaev', role: 'Lead Developer', bio: 'Expert in building seamless, user-friendly platforms.', image: 'assets/images/team2.png' },
-    { name: 'Nargiza Karimova', role: 'Designer', bio: 'Creates stunning visuals inspired by Uzbek traditions.', image: 'assets/images/team3.png' },
-    { name: 'Shokhrukhbek Usmonov', role: 'Community Manager', bio: 'Fosters vibrant connections within the Ustagram community.', image: 'assets/images/team4.png' }
+    { name: 'Azizbek Yuldashev', role: 'Asoschi va Direktor', bio: 'Texnologiya orqali O‘zbek madaniyatini namoyish qilishga ishtiyoqli.', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde' },
+    { name: 'Dilshod Mirzaev', role: 'Bosh Dasturchi', bio: 'Foydalanuvchilar uchun qulay platformalar yaratishda mutaxassis.', image: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12' },
+    { name: 'Nargiza Karimova', role: 'Dizayner', bio: 'O‘zbek an’analaridan ilhomlangan ajoyib vizuallar yaratadi.', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330' },
+    { name: 'Shokhrukhbek Usmonov', role: 'Jamoa Menejeri', bio: 'Ustagram jamoasida jonli aloqalarni rivojlantiradi.', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d' }
   ];
 
   protected testimonials = [
-    { text: 'Ustagram lets me share my culture in such a vibrant way!', author: 'Aziza, Tashkent' },
-    { text: 'The explore page keeps me hooked with fresh content daily.', author: 'Rustam, Samarkand' },
-    { text: 'Best platform for connecting with Uzbek creators!', author: 'Dilnoza, Bukhara' },
-    { text: 'Posting and commenting feels so seamless and fun!', author: 'Kamron, Fergana' },
-    { text: 'Ustagram’s design is stunning and easy to use!', author: 'Zarina, Namangan' }
+    { text: 'Ustagram orqali madaniyatimizni juda jonli tarzda ulashaman!', author: 'Aziza, Toshkent' },
+    { text: 'Kashf qilish sahifasi har kuni yangi kontent bilan meni o‘ziga jalb qiladi.', author: 'Rustam, Samarqand' },
+    { text: 'O‘zbek ijodkorlari bilan bog‘lanish uchun eng yaxshi platforma!', author: 'Dilnoza, Buxoro' },
+    { text: 'Post qilish va fikr yozish juda qulay va qiziqarli!', author: 'Kamron, Farg‘ona' },
+    { text: 'Ustagramning dizayni ajoyib va foydalanish oson!', author: 'Zarina, Namangan' }
   ];
 
-  constructor(library: FaIconLibrary) {
+  constructor(library: FaIconLibrary, private ngZone: NgZone) {
     library.addIcons(faHeart, faCamera, faUsers, faStar, faSearch, faComment, faInstagram, faTwitter, faFacebook, faTelegram, faChevronUp, faChevronDown);
     gsap.registerPlugin(ScrollTrigger);
   }
@@ -120,7 +127,7 @@ export class App implements OnInit {
     this.setupCarouselAutoPlay();
     this.setupTouchEvents();
     this.setupStatsAnimation();
-    this.setupMainPageAnimations(); // Replaced setupScrollAnimations
+    this.setupMainPageAnimations();
   }
 
   protected setupPreloader(): void {
@@ -150,9 +157,7 @@ export class App implements OnInit {
       scale: 0.8,
       duration: 1.2,
       delay: 2,
-      ease: 'back.out(2)',
-      onComplete: () => {
-      }
+      ease: 'back.out(2)'
     });
   }
 
@@ -196,20 +201,31 @@ export class App implements OnInit {
       duration: 1.4,
       ease: 'back.out(2.5)'
     });
-    gsap.from('.chat-message', {
-      opacity: 0,
-      y: 40,
-      duration: 0.9,
-      stagger: 0.8,
-      ease: 'power2.out',
-      onComplete: () => {
-        this.showExploreButton = true;
-        gsap.from('.explore-button', {
-          opacity: 0,
-          scale: 0.8,
-          duration: 1.2,
-          ease: 'back.out(2.5)'
-        });
+    this.animateMessages();
+  }
+
+  protected animateMessages(): void {
+    this.ngZone.run(() => {
+      if (this.currentMessageIndex < this.chatMessages.length) {
+        this.showTyping = true;
+        setTimeout(() => {
+          this.ngZone.run(() => {
+            this.chatMessages[this.currentMessageIndex].state = 'visible';
+            this.showTyping = false;
+            this.currentMessageIndex++;
+            if (this.currentMessageIndex < this.chatMessages.length) {
+              this.animateMessages();
+            } else {
+              this.showExploreButton = true;
+              gsap.from('.explore-button', {
+                opacity: 0,
+                scale: 0.8,
+                duration: 1.2,
+                ease: 'back.out(2.5)'
+              });
+            }
+          });
+        }, 3000);
       }
     });
   }
@@ -374,20 +390,25 @@ export class App implements OnInit {
   }
 
   protected setupFloatingButton(): void {
-    gsap.to('.floating-button', {
-      x: 20,
-      y: 20,
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: 'power1.inOut',
-      keyframes: [
-        { x: 20, y: 20 },
-        { x: 20, y: -20 },
-        { x: -20, y: -20 },
-        { x: -20, y: 20 }
-      ]
-    });
+    const button = document.querySelector('.floating-button');
+    const animateButton = () => {
+      gsap.to(button, {
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+        onComplete: () => {
+          button?.classList.toggle('bottom-right');
+          button?.classList.toggle('top-left');
+          gsap.to(button, {
+            opacity: 1,
+            duration: 0.5,
+            ease: 'power2.in'
+          });
+        }
+      });
+    };
+    setInterval(animateButton, 5000);
+    animateButton();
   }
 
   protected setupCarouselAutoPlay(): void {
@@ -463,10 +484,10 @@ export class App implements OnInit {
   protected validateEmail(): void {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!this.newsletterEmail) {
-      this.emailError = 'Please enter an email address.';
+      this.emailError = 'Iltimos, e-pochtangizni kiriting.';
       this.isEmailValid = false;
     } else if (!emailRegex.test(this.newsletterEmail)) {
-      this.emailError = 'Please enter a valid email address.';
+      this.emailError = 'Iltimos, to‘g‘ri e-pochta manzilini kiriting.';
       this.isEmailValid = false;
     } else {
       this.emailError = '';
@@ -478,7 +499,7 @@ export class App implements OnInit {
     if (this.isEmailValid) {
       console.log(`Subscribing ${this.newsletterEmail} to newsletter`);
       this.newsletterEmail = '';
-      this.emailError = 'Thank you for subscribing!';
+      this.emailError = 'Obuna bo‘lganingiz uchun rahmat!';
       this.isEmailValid = false;
       setTimeout(() => {
         this.emailError = '';
