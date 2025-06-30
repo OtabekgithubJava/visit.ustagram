@@ -16,13 +16,7 @@ declare var particlesJS: any;
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
   standalone: false,
-  animations: [
-    trigger('messageAnimation', [
-      state('hidden', style({ opacity: 0, transform: 'translateY(30px)' })),
-      state('visible', style({ opacity: 1, transform: 'translateY(0)' })),
-      transition('hidden => visible', animate('0.7s ease-in'))
-    ])
-  ]
+  animations: [  trigger('messageAnimation', [    state('hidden', style({ opacity: 0, transform: 'translateY(30px)' })),    state('visible', style({ opacity: 1, transform: 'translateY(0)' })),    state('exit', style({ opacity: 0, transform: 'translateY(-100%)' })),    transition('hidden => visible', animate('0.7s ease-in')),    transition('visible => exit', animate('0.5s ease-out'))  ])]
 })
 export class App implements OnInit {
   protected title = 'Usta_Visit';
@@ -62,23 +56,18 @@ export class App implements OnInit {
   protected faChevronDown = faChevronDown;
 
   protected chatMessages = [
-    { sender: 'user1', text: 'Hey, Ustagramni ko‘rdingmi?', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
-    { sender: 'user2', text: 'Ha, zo‘r! O‘zbekcha vibe bilan post qilish ajoyib.', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
-    { sender: 'user1', text: 'Kashf qilish sahifasi olov! Toshkentdan buncha qiziq postlar.', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
-    { sender: 'user2', text: 'Postlarni baholash juda qiziqarli qiladi!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
-    { sender: 'user1', text: 'Fikr yozish va ulanish juda oson.', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
-    { sender: 'user2', text: 'Profilni sozlash keyingi daraja!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
-    { sender: 'user1', text: 'Keling, postlarni ulashamiz va u yerda bog‘lanamiz!', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
-    { sender: 'user2', text: 'Men ham bor! Ustagram kelajak!', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' }
+    { sender: 'user1', text: 'Hey, Ustagram haqida eshitdingmi?', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Ha, zo‘r platforma ekan! Hunarmandchilikni zamonaviy darajaga chiqaradi. 🇺🇿', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
+    { sender: 'user1', text: 'Men o‘z ishlarimni katta auditoriyaga tekinga reklama qildim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: 'Men esa umumiy reyting orqali o‘zimga kerakli mutaxassis topdim', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' },
+    { sender: 'user1', text: 'Shaxsiy kabinetni sozlab, musobaqalashish boshqa daraja 🔥', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde', state: 'hidden' },
+    { sender: 'user2', text: '🫵 Siz ham quyidagi tugmani bosib, bizga qo‘shiling', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12', state: 'hidden' }
   ];
 
   protected carouselSlides = [
-    { image: 'https://images.unsplash.com/photo-1516321310768-79db8ce2d971', alt: 'Ustagram Post', caption: 'O‘z lahzalaringizni uslub bilan ulashing' },
-    { image: 'https://images.unsplash.com/photo-1522202176988-66273c2b6e3c', alt: 'Ustagram Profil', caption: 'O‘zingizning noyob shaxsingizni yarating' },
-    { image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', alt: 'Ustagram Kashf', caption: 'O‘zbekning trend kontentini kashf qiling' },
-    { image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f', alt: 'Ustagram Fikr', caption: 'Jamoa bilan muloqot qiling' },
-    { image: 'https://images.unsplash.com/photo-1516321310768-79db8ce2d971', alt: 'Ustagram Baholash', caption: 'Eng yaxshi postlarni baholang' },
-    { image: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0', alt: 'Ustagram Ulashish', caption: 'Ijodingizni tarqating' }
+    { image: 'new.jpg', alt: 'Ustagram Post', caption: 'Hunarmandchilikka oid yangiliklar, fikrlar va noodatiy lavhalar' },
+    { image: 'rate.jpg', alt: 'Ustagram Profil', caption: 'Universal qidiruv va mutaxassislar reytingi' },
+    { image: 'profile.jpeg', alt: 'Ustagram Kashf', caption: 'Resume sifatida shaxsiy kabinet' }
   ];
 
   protected features = [

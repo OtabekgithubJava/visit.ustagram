@@ -2,9 +2,9 @@
   <div class="preloader" *ngIf="showPreloader">
     <div id="particles-js" class="particles"></div>
     <div class="preloader-content">
-      <img src="https://images.unsplash.com/photo-1611068815476-7d6938423e37" alt="Ustagram Logo" class="preloader-logo">
+      <img src="ustagram.png" alt="Ustagram Logo" class="preloader-logo">
       <h1 class="preloader-title">Ustagram</h1>
-      <p class="preloader-subtitle">Xush kelibsiz! O'zbek ijtimoiy inqilobiga qo'shiling</p>
+      <p class="preloader-subtitle">Xush kelibsiz! O'zbek milliy hunarmandchilik platformasiga qo'shiling</p>
       <button class="start-button" (click)="startExperience()">Boshlash</button>
     </div>
   </div>
@@ -19,32 +19,12 @@
         <div class="typing-indicator" *ngIf="showTyping">...</div>
       </div>
     </div>
-    <button class="explore-button" *ngIf="showExploreButton" (click)="showMainPage()">Kashf qilish</button>
+    <button class="explore-button" *ngIf="showExploreButton" (click)="showMainPage()">Ustagram haqida o'rganish</button>
   </div>
 
-  <div class="main-page" *ngIf="showMain">
-    <section class="hero-section">
-      <video autoplay muted loop class="background-video">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-city-during-the-night-48273-large.mp4" type="video/mp4">
-        Brauzeringiz video teglarni qo'llab-quvvatlamaydi.
-      </video>
-      <div class="video-overlay">
-        <div class="video-icons">
-          <fa-icon [icon]="faHeart" class="video-icon" title="Yoqtirish va ulashish"></fa-icon>
-          <fa-icon [icon]="faCamera" class="video-icon" title="Fotosuratlarni ulashish"></fa-icon>
-          <fa-icon [icon]="faUsers" class="video-icon" title="Jamoaga qo'shilish"></fa-icon>
-          <fa-icon [icon]="faStar" class="video-icon" title="Kontentni baholash"></fa-icon>
-          <fa-icon [icon]="faSearch" class="video-icon" title="Trendlar kashf qilish"></fa-icon>
-          <fa-icon [icon]="faComment" class="video-icon" title="Fikr bildiring va bog'laning"></fa-icon>
-        </div>
-        <h1 class="hero-title">O'zbek ruhida ulashing</h1>
-        <p class="hero-subtitle">O'zbek ruhi bilan jonli ijtimoiy platformani kashf qiling</p>
-        <a href="https://ustagram.uz" class="hero-cta">Ustagramga hozir qo'shiling</a>
-      </div>
-    </section>
-
+  <div class="main-page" *ngIf="showMain"> 
     <section class="carousel-section">
-      <h2 class="section-title">Ustagram xususiyatlarini kashf qiling</h2>
+      <h2 class="section-title">Ustagram xususiyatlari bilan tanishing</h2>
       <div class="carousel" #carousel>
         <div class="carousel-item" *ngFor="let slide of carouselSlides; let i = index" [ngClass]="{ active: i === currentSlide }">
           <img [src]="slide.image" [alt]="slide.alt" class="carousel-image">
@@ -139,7 +119,7 @@
 
     <footer class="footer-section">
       <div class="footer-content">
-        <img src="https://images.unsplash.com/photo-1611068815476-7d6938423e37" alt="Ustagram Logo" class="footer-logo">
+        <img src="ustagram.png" alt="Ustagram Logo" class="footer-logo">
         <h3>Ustagram</h3>
         <p>O'zbek madaniyati va ijodkorligi orqali dunyo bilan bog'laning</p>
         <div class="social-icons">
